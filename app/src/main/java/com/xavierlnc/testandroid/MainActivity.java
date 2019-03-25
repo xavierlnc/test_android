@@ -19,24 +19,23 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
 
-    private ArrayList<Integer> array;
+    private ArrayList<String> array;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FibonacciSequence fs = new FibonacciSequence();
+        int target = 5000;
+        fs.compute(target);
+
         //Sample of fibonacci sequence
         array = new ArrayList<>();
-        array.add(0);
-        array.add(1);
-        array.add(1);
-        array.add(2);
-        array.add(3);
-        array.add(5);
-        array.add(8);
-        array.add(13);
-        array.add(21);
+        for (int i =0;i<target;i++) {
+            array.add(fs.sequence.get(i));
+        }
+
 
         //Set recyclerView
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler);
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     //Adapter for the RecyclerView
     public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
-        private ArrayList<Integer> list;
+        private ArrayList<String> list;
 
         public RecyclerAdapter() {
             list = array;
