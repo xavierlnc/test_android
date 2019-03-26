@@ -1,6 +1,4 @@
-package com.xavierlnc.testandroid;
-
-import android.util.Log;
+package com.xavierlnc.testandroid.Fibonacci;
 
 import java.util.LinkedList;
 
@@ -39,7 +37,7 @@ public class FibonacciNumber implements Cloneable {
 
         FibonacciNumber result = new FibonacciNumber();
         int retenue = 0;
-        boolean isFinished = false;
+        boolean isFinished = false; //est-ce que la somme est terminée
 
         //Pour chaque puissance de 10 on calcul la somme des deux chiffres
         while (true) {
@@ -69,6 +67,9 @@ public class FibonacciNumber implements Cloneable {
                 if (sumOfDigit >= 10) {
                     result.number.add(sumOfDigit%10);
                     retenue = 1;
+
+                // Si la somme est terminée, sumOfDigit=0
+                // il ne faut donc pas ajouté le 0 au nombre
                 } else if (!isFinished){
                     result.number.add(sumOfDigit);
                     retenue = 0;
@@ -98,7 +99,6 @@ public class FibonacciNumber implements Cloneable {
                 result.append(String.valueOf(copy.get(0)));
                 copy.remove(0);
             } catch (IndexOutOfBoundsException e) {
-                Log.i(TAG,result.toString());
                 break;
             }
         }
