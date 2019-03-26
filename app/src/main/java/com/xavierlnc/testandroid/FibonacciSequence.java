@@ -2,20 +2,25 @@ package com.xavierlnc.testandroid;
 
 import android.util.Log;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 
 public class FibonacciSequence {
 
     private String TAG = "FibonacciSequence";
 
-    public static ArrayList<String> sequence;
+    public static LinkedList<FibonacciNumber> sequence;
 
     public FibonacciSequence() {
-        sequence = new ArrayList<>();
+        sequence = new LinkedList<>();
     }
 
-    public String compute(int n) {
+    /*
+     * Store fibonacci number
+     * Take two last to compute the next
+     * n has to be fix
+     */
+    public void compute(int n) {
         Log.i(TAG,"compute : "+String.valueOf(n));
         FibonacciNumber alpha = new FibonacciNumber(0);
         FibonacciNumber beta = new FibonacciNumber(1);
@@ -25,9 +30,8 @@ public class FibonacciSequence {
             temp = FibonacciNumber.sum(alpha,beta);
             alpha = beta;
             beta = temp;
-            sequence.add(alpha.toString());
+            sequence.add(alpha);
         }
-        return alpha.toString();
     }
 
 }

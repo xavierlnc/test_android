@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
 
-    private ArrayList<String> array;
+    private LinkedList<FibonacciNumber> array;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +29,8 @@ public class MainActivity extends AppCompatActivity {
         FibonacciSequence fs = new FibonacciSequence();
         int target = 5000;
         fs.compute(target);
-
         //Sample of fibonacci sequence
-        array = new ArrayList<>();
+        array = new LinkedList<>();
         for (int i =0;i<target;i++) {
             array.add(fs.sequence.get(i));
         }
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     //Adapter for the RecyclerView
     public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
-        private ArrayList<String> list;
+        private LinkedList<FibonacciNumber> list;
 
         public RecyclerAdapter() {
             list = array;
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             Log.d(TAG,"Position : "+String.valueOf(position));
-            holder.textView.setText(String.valueOf(list.get(position)));
+            holder.textView.setText(String.valueOf(list.get(position).toString()));
         }
 
         @Override
