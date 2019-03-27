@@ -28,7 +28,7 @@ Cette classe permet tout simplement de générer la suite de Fibonacci. Pour avo
 
 C'est la classe qui gère l'Activity. La suite de Fibonacci est affiché à l'aide d'un *RecyclerView* sous forme de liste qui peut être scrollée indéfiniment. 
 
-Dès que l'utilisateur a scrollé presque 1000 nombres, les 1000 prochains termes de la suite sont chargés via une *AsynTask*. Cela permet d'éviter à l'application de freezer en cas de long chargement (notamment quand les nombres deviennent de plus en plus grands). Si la génération des prochains éléments est longue, une *ProgressBar* indique que les données sont en train de charger. Un callback permet d'indiquer la fin du chargement et de renvoyer les données.
+Dès que l'utilisateur a scrollé presque 1000 nombres, les 1000 prochains termes de la suite sont chargés via une *AsyncTask*. Cela permet d'éviter à l'application de freezer en cas de long chargement (notamment quand les nombres deviennent de plus en plus grands). Si la génération des prochains éléments est longue, une *ProgressBar* indique que les données sont en train de charger. Un callback permet d'indiquer la fin du chargement et de renvoyer les données.
 
 ## Limite de l'Application pour générer la suite à l'infini
 
