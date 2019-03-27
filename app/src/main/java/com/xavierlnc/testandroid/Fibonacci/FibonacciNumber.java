@@ -22,7 +22,7 @@ public class FibonacciNumber implements Cloneable {
         number = (LinkedList<Integer>) list.clone();
     }
 
-    // Calcul la somme de 2 objets "FibonacciNumber"
+    // Calcule la somme de 2 objets "FibonacciNumber"
     public static FibonacciNumber sum(FibonacciNumber a, FibonacciNumber b) {
 
         //Copie des 2 nombres à additioner
@@ -39,7 +39,7 @@ public class FibonacciNumber implements Cloneable {
         int retenue = 0;
         boolean isFinished = false; //est-ce que la somme est terminée
 
-        //Pour chaque puissance de 10 on calcul la somme des deux chiffres
+        //Pour chaque puissance de 10 on calcule la somme des deux chiffres
         while (true) {
             int sumOfDigit = 0;
             try {
@@ -63,13 +63,13 @@ public class FibonacciNumber implements Cloneable {
                     break;
                 }
             } finally {
-                //Si la somme est supérieur à 10, il faut retenir 1 pour la prochaine puissance de 10
+                //Si la somme est supérieure à 10, il faut retenir 1 pour la prochaine puissance de 10
                 if (sumOfDigit >= 10) {
                     result.number.add(sumOfDigit%10);
                     retenue = 1;
 
                 // Si la somme est terminée, sumOfDigit=0
-                // il ne faut donc pas ajouté le 0 au nombre
+                // il ne faut donc pas ajouter le 0 au nombre
                 } else if (!isFinished){
                     result.number.add(sumOfDigit);
                     retenue = 0;
@@ -77,7 +77,7 @@ public class FibonacciNumber implements Cloneable {
             }
         }
 
-        // S'il reste une retenue, l'ajouté
+        // S'il reste une retenue, l'ajouter
         if (retenue != 0) {
             result.number.add(retenue);
         }

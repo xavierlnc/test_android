@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // ViewHolder pour les progressBar
+        // ViewHolder pour la progressBar
         public class ProgressHolder extends RecyclerViewHolder {
 
             private ProgressBar progressBar;
