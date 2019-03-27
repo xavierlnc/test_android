@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("La suite de Fibonacci");
 
         fs = new FibonacciSequence();
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         list = new LinkedList<>();
         list.add(new FibonacciNumber(0));
         list.add(new FibonacciNumber(1));
-        for (int i =0;i<1477;i++) {
+        for (int i =0;i<1000;i++) {
             list.add(fs.getNext());
         }
 
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     public static class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder> {
 
         private LinkedList<FibonacciNumber> list;
-        private int visibleThreshold = 50;
+        private int visibleThreshold = 100;
         private int lastVisibleItem, totalItemCount;
         private boolean loading;
         private OnLoadMoreListener onLoadMoreListener;
