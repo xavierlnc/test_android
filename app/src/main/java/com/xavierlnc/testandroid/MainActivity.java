@@ -1,6 +1,6 @@
 package com.xavierlnc.testandroid;
 
-import android.os.Handler;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,29 +19,28 @@ import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String TAG = "Main activity";
+    private static final String TAG = "Main activity";
 
     private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
     private FibonacciSequence fs;
 
     private LinkedList<FibonacciNumber> list;
-    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        handler = new Handler();
         fs = new FibonacciSequence();
 
-        //Initialisation de la liste avec 1000 éléments
+        //Initialisation de la liste avec les 2 premiers éléments incalculables plus 1000 éléments
         list = new LinkedList<>();
-        for (int i =0;i<1000;i++) {
+        list.add(new FibonacciNumber(0));
+        list.add(new FibonacciNumber(1));
+        for (int i =0;i<1477;i++) {
             list.add(fs.getNext());
         }
-
 
         //Mise en place du RecyclerView et de son adapter
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler);
@@ -50,39 +49,75 @@ public class MainActivity extends AppCompatActivity {
         recyclerAdapter = new RecyclerAdapter(list,recyclerView);
         recyclerView.setAdapter(recyclerAdapter);
 
+        // Gestion du chargement des données
         recyclerAdapter.setOnLoadMoreListener(new RecyclerAdapter.OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                Log.i(TAG,"Chargement des prochains nombres de la suite");
+                // L'ajout d'un objet null permet à l'adapter d'ajouter la progressBar en bas de page
                 list.add(null);
                 recyclerView.post(new Runnable() {
                     public void run() {
                         recyclerAdapter.notifyItemInserted(list.size() - 1);
                     }
                 });
-                handler.post(new Runnable() {
+
+                Log.i(TAG,"Chargement des prochains nombres de la suite");
+                new LoadNextData(list, new CallBack() {
+
+                    //Lorsque les données sont chargées
                     @Override
-                    public void run() {
-                        Log.i(TAG,"Debut du chargement des données");
+                    public void onCallBack(LinkedList<FibonacciNumber> fn) {
+                        // On enlève l'élément servant à la progressBar
                         list.remove(list.size() - 1);
                         recyclerAdapter.notifyItemRemoved(list.size());
-                        for (int i = 0; i < 1000; i++) {
-                            list.add(fs.getNext());
-                            recyclerAdapter.notifyItemInserted(list.size());
-                        }
+
+                        // Mise à jour de la liste
+                        list.addAll(fn);
+                        recyclerAdapter.notifyItemInserted(list.size());
                         recyclerAdapter.setLoaded();
                         Log.i(TAG,"Fin du chargement des données");
                     }
-                });
+                }).execute();
             }
         });
+    }
+
+    public interface CallBack {
+        void onCallBack(LinkedList<FibonacciNumber> fn);
+    }
+
+    // Pour charger les prochaines données sur un thread séparé
+    public class LoadNextData extends AsyncTask<Void, Void, Void> {
+
+        private CallBack callBack;
+        private LinkedList<FibonacciNumber> linkedList;
+
+        public LoadNextData( LinkedList<FibonacciNumber> list, CallBack callBack) {
+            this.callBack = callBack;
+            this.linkedList = new LinkedList<>();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            for (int i = 0; i < 1000; i++) {
+                linkedList.add(fs.getNext());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            callBack.onCallBack(linkedList);
+        }
+
     }
 
     //Adapter du RecyclerView
     public static class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder> {
 
         private LinkedList<FibonacciNumber> list;
-        private int visibleThreshold = 100;
+        private int visibleThreshold = 50;
         private int lastVisibleItem, totalItemCount;
         private boolean loading;
         private OnLoadMoreListener onLoadMoreListener;
@@ -90,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         public RecyclerAdapter(LinkedList<FibonacciNumber> sequence, RecyclerView recyclerView) {
             this.list = sequence;
 
-            // Manage scrolling
+            // Gestion du Scroll
             final LinearLayoutManager linearLayoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -99,10 +134,11 @@ public class MainActivity extends AppCompatActivity {
                     totalItemCount = linearLayoutManager.getItemCount();
                     lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
                     if(!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)){
+                        // Besoin de plus de données
+                        loading = true;
                         if(onLoadMoreListener != null){
                             onLoadMoreListener.onLoadMore();
                         }
-                        loading = true;
                     }
                 }
             });
@@ -112,14 +148,7 @@ public class MainActivity extends AppCompatActivity {
         // Le résultat indique s'il faut afficher la progressBar ou un nombre de la suite
         @Override
         public int getItemViewType(int position) {
-            // Par défaut on affiche la progressBar
-            int result = 0;
-
-            // Si on peut afficher un élément
-            if (this.list.get(position) != null) {
-                result = 1;
-            }
-            return result;
+            return this.list.get(position) != null ? 1 : 0;
         }
 
         //Choisi le prochain élément à afficher
@@ -130,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item, parent, false);
                 viewHolder = new RecyclerViewHolder(view);
             } else { // Afficher la progressBar
+                Log.i(TAG,"ProressHolder");
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_loader, parent, false);
                 viewHolder = new ProgressHolder(view);
             }
@@ -165,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        // ViewHolder for number
+        // ViewHolder pour les nombres
         public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
             private TextView textView;
@@ -176,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // ViewHolder for progressBar
+        // ViewHolder pour les progressBar
         public class ProgressHolder extends RecyclerViewHolder {
 
             private ProgressBar progressBar;
@@ -185,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
                 super(view);
                 progressBar = (ProgressBar) view.findViewById(R.id.main_progressbar);
             }
-
         }
     }
 }
